@@ -1,0 +1,9 @@
+{
+  "nested": {
+    "key1": "value1",
+    "key2": {
+      "subkey1": [1, 2, 3],
+      "subkey2": "nested_value"
+    }
+  }
+}

@@ -1,4 +1,4 @@
 
-OK: 2
-Failed: 0
-Total: 2
+Total tests: 16
+Failed tests: 0
+Passed tests: 16

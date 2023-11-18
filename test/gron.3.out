@@ -1,0 +1,9 @@
+json = {};
+json.nested = {};
+json.nested.key1 = "value1";
+json.nested.key2 = {};
+json.nested.key2.subkey1 = [];
+json.nested.key2.subkey1[0] = 1;
+json.nested.key2.subkey1[1] = 2;
+json.nested.key2.subkey1[2] = 3;
+json.nested.key2.subkey2 = "nested_value";
