@@ -7,6 +7,6 @@ SKIPPED: Program: wc, Test File: wc.3.in, Flag: -l - Expected output file does n
 SKIPPED: Program: wc, Test File: wc.3.in, Flag: -w - Expected output file does not exist.
 
 Total tests: 23
-Failed tests: 0
+Unsuccessful tests: 0
 Skipped tests: 7
 Passed tests: 16

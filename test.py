@@ -48,7 +48,7 @@ def run_test(prog, num, input_file, arg_mode, flag=None):
 
     # Initialize a variable to capture any errors during execution
     err = ''
-    cmd = ' '.join(cmd)
+    # cmd = ' '.join(cmd)
 
     # Execute the program and capture its output
     try:
@@ -78,7 +78,7 @@ def run_test(prog, num, input_file, arg_mode, flag=None):
     # Return the actual output and expected output
     return actual_output.strip(), expected_output
 
-def test_csv_sum(test_file, flag, file, total_tests, failed_tests):
+def test_csv_sum(test_file, flag, total_tests, failed_tests):
     """
     Test the 'csvsum' program with a given test file and flag.
 
@@ -93,12 +93,24 @@ def test_csv_sum(test_file, flag, file, total_tests, failed_tests):
     tuple: Updated total_tests and failed_tests counters.
     """
     total_tests += 1
-    actual_output, expected_output = run_test(prog='csvsum', num=test_file.split('.')[1], input_file=test_file, arg_mode=True, flag=flag)
-    if actual_output != expected_output:
-        failed_tests += 1
-        file.write(f"FAIL: Program: csvsum, Test File: {test_file}, Arg Mode: True, Flag: {flag}\n")
-        file.write(f"Expected output: \n{expected_output}\n")
-        file.write(f"Actual output: \n{actual_output}\n\n")
+    # actual_output, expected_output = run_test(prog='csvsum', num=test_file.split('.')[1], input_file=test_file, arg_mode=True, flag=flag)
+
+    cmd = ['python', os.path.join('prog', 'csvsum.py'), os.path.join(test_dir, test_file), f' {flag}']
+    cmd = ' '.join(cmd)
+    
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+    actual_output, err = process.communicate(input=flag)
+
+    output_file = os.path.join(test_dir, test_file.replace('.in', f'.{flag}.out'))
+    with open(output_file, 'r') as file:
+        expected_output = file.read().strip()
+
+    if actual_output.strip() != expected_output.strip():
+        with open(results_file, 'a') as file:
+            failed_tests += 1
+            file.write(f"FAIL: Program: csvsum, Test File: {test_file}, Arg Mode: True, Flag: {flag}\n")
+            file.write(f"Expected output: \n{expected_output}\n")
+            file.write(f"Actual output: \n{actual_output}\n\n")
 
     return total_tests, failed_tests
 
@@ -123,7 +135,7 @@ def test_wc_multiple_files(test_files, flag, output_file, total_tests, failed_te
         cmd.append(os.path.join(test_dir, i))
     if flag:
         cmd.append(flag)
-    cmd = ' '.join(cmd)
+    # cmd = ' '.join(cmd)
 
     try:
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -184,21 +196,22 @@ def main():
                         file.write(f"Expected output: \n{expected_output}\n")
                         file.write(f"Actual output: \n{actual_output}\n\n")
 
-        # Test csvsum separately
-        total_tests, failed_tests = test_csv_sum('csvsum.1.in', '-c 0 2', file, total_tests, failed_tests)
-        total_tests, failed_tests = test_csv_sum('csvsum.2.in', '-c 0 3', file, total_tests, failed_tests)
-        total_tests, failed_tests = test_csv_sum('csvsum.3.in', '-c 0 1', file, total_tests, failed_tests)
-        total_tests, failed_tests = test_csv_sum('csvsum.4.in', '-c 0 1 -p 2', file, total_tests, failed_tests)
-        total_tests, failed_tests = test_csv_sum('csvsum.5.in', '-c 0 1', file, total_tests, failed_tests)
+    # Test csvsum separately
+    total_tests, failed_tests = test_csv_sum('csvsum.1.in', '-c 0 2', total_tests, failed_tests)
+    total_tests, failed_tests = test_csv_sum('csvsum.2.in', '-c 0 3', total_tests, failed_tests)
+    total_tests, failed_tests = test_csv_sum('csvsum.3.in', '-c 0 1', total_tests, failed_tests)
+    total_tests, failed_tests = test_csv_sum('csvsum.4.in', '-c 0 1 -p 2', total_tests, failed_tests)
+    total_tests, failed_tests = test_csv_sum('csvsum.5.in', '-c 0 1', total_tests, failed_tests)
 
-        # Test wc with multiple files
-        test_files = ['wc.1.in', 'wc.2.in']
-        output_file = 'wc.1.2.out'
-        total_tests, failed_tests, write_data = test_wc_multiple_files(test_files, None, output_file, total_tests, failed_tests)
+    # Test wc with multiple files
+    test_files = ['wc.1.in', 'wc.2.in']
+    output_file = 'wc.1.2.out'
+    total_tests, failed_tests, write_data = test_wc_multiple_files(test_files, None, output_file, total_tests, failed_tests)
+    with open(results_file, 'a') as file:
         file.write(write_data)
 
         file.write(f"\nTotal tests: {total_tests}\n")
-        file.write(f"Failed tests: {failed_tests}\n")
+        file.write(f"Unsuccessful tests: {failed_tests}\n")
         file.write(f"Skipped tests: {skipped_tests}\n")
         file.write(f"Passed tests: {total_tests - failed_tests - skipped_tests}\n")
 

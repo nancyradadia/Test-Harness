@@ -3,7 +3,7 @@ name: Run Tests
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -11,11 +11,9 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x' # Use the default Python 3 version
+        python-version: '3.11' # Use the default Python 3 version
     - name: Install dependencies
       run: |
-        # If you have any dependencies, install them here
-        # For example, if you have a requirements.txt file, uncomment the next line
         pip install -r requirements.txt
     - name: Run test script
       run: python test.py
