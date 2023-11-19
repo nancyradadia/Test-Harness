@@ -2,7 +2,6 @@ import os
 import subprocess
 import sys
 
-# Directory containing test input files
 test_dir = 'test/'
 
 # Dictionary mapping program names to their respective command-line flags
@@ -10,7 +9,6 @@ program_flags = {
     'wc': ['-l', '-w', '-c']
 }
 
-# File to store the results of the tests
 results_file = 'test_results.txt'
 
 def run_test(prog, num, input_file, arg_mode, flag=None):
@@ -48,7 +46,6 @@ def run_test(prog, num, input_file, arg_mode, flag=None):
 
     # Initialize a variable to capture any errors during execution
     err = ''
-    # cmd = ' '.join(cmd)
 
     # Execute the program and capture its output
     try:
@@ -93,8 +90,7 @@ def test_csv_sum(test_file, flag, total_tests, failed_tests):
     tuple: Updated total_tests and failed_tests counters.
     """
     total_tests += 1
-    # actual_output, expected_output = run_test(prog='csvsum', num=test_file.split('.')[1], input_file=test_file, arg_mode=True, flag=flag)
-
+    
     cmd = ['python', os.path.join('prog', 'csvsum.py'), os.path.join(test_dir, test_file), f' {flag}']
     cmd = ' '.join(cmd)
     

@@ -247,7 +247,6 @@ json.menu.value = "File";
     ```
     To check for timeout error, reduce the value to 0.00001 or 0.000001. It will return a timeout error.
 
-
     Note:
     - Timeout has been implemented for all the utilities; but has been used and tested only for `gron.py` given the increasing complexity of `test.py`.
     -  The timeout value is in seconds
@@ -264,7 +263,7 @@ python test.py
 The test.py contains different test cases implemented for all three programs along with extensions.
 1. The test.py file looks for `(program.in)` in the \test directory
 2. For each test, it runs the program with input from STDIN and compares the output with the expected output ` (PROG.NAME.out)` and it looks for `(PROG.NAME.FLAG.out)` to test extensions and csvsum tests.
-3. It writes summary of all tests, including passed, failed, and skipped tests.
+3. It writes summary of all tests, including passed, failed, and skipped tests in test_results.txt.
 
 
 ## Bugs 
