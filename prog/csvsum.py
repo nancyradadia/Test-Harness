@@ -1,37 +1,55 @@
-import argparse
 import csv
 import sys
+import argparse
 
-def sum_csv_columns(file, columns):
-    sums = {column: 0 for column in columns}
-    column_indices = None
+def sum_columns(csv_file, columns, precision):
+    """
+    Sum specified columns in a CSV file with given precision.
 
-    reader = csv.reader(file)
-    for i, row in enumerate(reader):
-        if i == 0:
-            # Identify column indices
-            if all(isinstance(col, str) for col in columns):
-                column_indices = [row.index(col) for col in columns]
-            else:
-                column_indices = columns
-        else:
-            for idx, col_index in enumerate(column_indices):
-                sums[columns[idx]] += float(row[col_index])
+    Parameters:
+    csv_file (file object): The CSV file to process.
+    columns (list of int): Indices of the columns to sum.
+    precision (int): Number of decimal places for the sum.
 
+    Returns:
+    list or str: Sums of the specified columns or an error message.
+    """
+    sums = [0 for _ in columns]  # Initialize sums for each column
+    try:
+        reader = csv.reader(csv_file)  # Create a CSV reader
+        for row in reader:  # Iterate over each row
+            for i, col in enumerate(columns):
+                sums[i] += float(row[col])  # Add the value in the specified column
+        # Format sums to the specified precision
+        sums = [round(sum, precision) for sum in sums]
+    except ValueError as e:  # Handle value errors (like converting to float)
+        return f"Error: {e}"
+    except IndexError as e:  # Handle index errors (column index out of range)
+        return f"Error: {e}"
     return sums
 
 def main():
-    parser = argparse.ArgumentParser(description='Sum specified columns in a CSV file')
+    """
+    The main function to parse arguments and execute the column sum functionality.
+    """
+    # Set up command-line argument parsing
+    parser = argparse.ArgumentParser(description='CSV Column Sum Utility')
+    
+    # Define arguments for the CSV file, column indices, and precision
     parser.add_argument('file', nargs='?', type=argparse.FileType('r'), default=sys.stdin, help='CSV file to process')
-    parser.add_argument('columns', nargs='+', help='Column names or indices to sum')
+    parser.add_argument('-c', '--columns', nargs='+', type=int, required=True, help='Column indices to sum (0-indexed)')
+    parser.add_argument('-p', '--precision', type=int, default=2, help='Number of decimal places in the sum')
+    
     args = parser.parse_args()
 
-    # Convert column indices to int if possible
-    columns = [int(col) if col.isdigit() else col for col in args.columns]
+    # Perform the column sum operation
+    sums = sum_columns(args.file, args.columns, args.precision)
+    # Check for errors or print the sums
+    if isinstance(sums, str):
+        print(sums)  # Print error message
+    else:
+        for i, sum in enumerate(sums):
+            print(f"Column {args.columns[i]} sum: {sum}")  # Print sum for each column
 
-    sums = sum_csv_columns(args.file, columns)
-    for col, sum_val in sums.items():
-        print(f"Sum of column '{col}': {sum_val}")
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

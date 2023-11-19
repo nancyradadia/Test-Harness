@@ -5,26 +5,37 @@ import os
 test_dir = 'test/'
 
 def run_test(prog, num, input_file, arg_mode=False):
-    # print(f"prog: {prog}, num: {num}, test_file: {input_file}, arg_mode: {arg_mode}")
-    input_file = test_dir+input_file
-    if(arg_mode):
-        cmd = ['python', f'prog/{prog}.py', input_file]
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, text=True)
-        actual_output, _ = process.communicate()
+    input_file = test_dir + input_file
+    timeout = None
+
+    # Check for timeout file
+    if os.path.exists(input_file.replace('.in', '.timeout')):
+        timeout = float(open(input_file.replace('.in', '.timeout'), 'r').read())
+
+    # Prepare command and input text based on arg_mode
+    cmd = ['python', f'prog/{prog}.py']
+    input_text = None
+    if arg_mode:
+        cmd.append(input_file)
     else:
         with open(input_file, 'r') as file:
             input_text = file.read()
-        cmd = ['python', f'prog/{prog}.py']
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
-        actual_output, _ = process.communicate(input=input_text)
-    
-    expected_output_file = f'{test_dir}{prog}.{num}.out' if arg_mode else f'{test_dir}{prog}.{num}.arg.out'
 
+    # Run the process
+    try:
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, text=True)
+        actual_output, _ = process.communicate(input=input_text, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        actual_output = 'Timeout expired'
+
+    # Compare output with expected output
+    expected_output_file = f'{test_dir}{prog}.{num}.out' if arg_mode else f'{test_dir}{prog}.{num}.arg.out'
     with open(expected_output_file, 'r') as file:
         expected_output = file.read().strip()
 
-    # return actual_output.strip() == expected_output
     return actual_output, expected_output
+
 
 def main():
     

@@ -2,23 +2,45 @@ import argparse
 import sys
 
 def count_text(text):
-    # Count lines correctly, even when the last line does not end with a newline
+    """
+    Count lines, words, and characters in a given text string.
+
+    Parameters:
+    text (str): The text to be counted.
+
+    Returns:
+    tuple: A tuple containing the counts of lines, words, and characters.
+    """
+    # Count lines, handling the edge case where the last line doesn't end with a newline
     lines = text.count('\n') + (not text.endswith('\n') and text != '')
-    words = len(text.split())
-    characters = len(text)
+    words = len(text.split())  # Count words by splitting the text
+    characters = len(text)  # Count characters directly from the text length
     return lines, words, characters
 
 def process_file(file_name):
+    """
+    Process a file to count its lines, words, and characters.
+
+    Parameters:
+    file_name (str): The name of the file to be processed.
+
+    Returns:
+    tuple: A tuple containing the counts of lines, words, and characters, or None if an error occurs.
+    """
     try:
-        with open(file_name, 'r') as file:
-            text = file.read()
-            return count_text(text)
-    except Exception as e:
+        with open(file_name, 'r') as file:  # Open the file for reading
+            text = file.read()  # Read the entire content of the file
+            return count_text(text)  # Return the counts for the file's content
+    except Exception as e:  # Handle any exception that might occur
         print(f"Error processing {file_name}: {e}", file=sys.stderr)
         return None
 
 def main():
+    """
+    The main function to parse arguments and execute the word count functionality.
+    """
     try:
+        # Set up command-line argument parsing
         parser = argparse.ArgumentParser(description='Word Count Utility')
         parser.add_argument('files', nargs='*', help='Files to process')
         parser.add_argument('-l', '--lines', action='store_true', help='Count lines only')
@@ -26,6 +48,7 @@ def main():
         parser.add_argument('-c', '--chars', action='store_true', help='Count characters only')
         args = parser.parse_args()
 
+        # Process each file provided in the arguments
         if args.files:
             total_lines = total_words = total_chars = 0
             for file_name in args.files:
@@ -37,27 +60,44 @@ def main():
                     total_chars += chars
                     print_output(lines, words, chars, file_name, args)
 
+            # Print total counts if multiple files are processed
             if len(args.files) > 1:
                 print_output(total_lines, total_words, total_chars, 'total', args)
         
         else:
-            # Read from STDIN if no files are provided
+            # Read from standard input (STDIN) if no files are provided
             stdin_text = sys.stdin.read()
             lines, words, chars = count_text(stdin_text)
             print_output(lines, words, chars, '', args)
         sys.exit(0)
+
     except Exception as e:
-        sys.exit(1)
+        sys.exit(1)  # Exit with error status if an exception occurs
 
 def print_output(lines, words, chars, label, args):
+    """
+    Print the count output formatted based on the specified arguments.
+
+    Parameters:
+    lines (int): Number of lines.
+    words (int): Number of words.
+    chars (int): Number of characters.
+    label (str): Label for the output (filename or 'total').
+    args (argparse.Namespace): Parsed command-line arguments.
+    """
     outputs = []
+    # Determine which counts to output based on the arguments
     if args.lines or not (args.lines or args.words or args.chars):
         outputs.append(str(lines))
     if args.words or not (args.lines or args.words or args.chars):
         outputs.append(str(words))
     if args.chars or not (args.lines or args.words or args.chars):
         outputs.append(str(chars))
-    print(' '.join(outputs))
+
+    print(' '.join(outputs), end='')  # Print the counts
+    
+    if label:
+        print(f"\t{label}")  # Print the label if provided
 
 if __name__ == "__main__":
     main()

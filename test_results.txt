@@ -1,4 +1,12 @@
+SKIPPED: Program: wc, Test File: wc.1.in, Flag: -w - Expected output file does not exist.
+SKIPPED: Program: wc, Test File: wc.1.in, Flag: -c - Expected output file does not exist.
+SKIPPED: Program: wc, Test File: wc.2.in, Flag: -l - Expected output file does not exist.
+SKIPPED: Program: wc, Test File: wc.2.in, Flag: -w - Expected output file does not exist.
+SKIPPED: Program: wc, Test File: wc.2.in, Flag: -c - Expected output file does not exist.
+SKIPPED: Program: wc, Test File: wc.3.in, Flag: -l - Expected output file does not exist.
+SKIPPED: Program: wc, Test File: wc.3.in, Flag: -w - Expected output file does not exist.
 
-Total tests: 16
+Total tests: 23
 Failed tests: 0
+Skipped tests: 7
 Passed tests: 16
